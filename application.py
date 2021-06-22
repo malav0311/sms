@@ -109,13 +109,13 @@ def severe(s):
     y_train = data.Severity
     vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,stop_words='english', ngram_range=(1,3))
     X_train = vectorizer.fit_transform(data.clean_posts)
-    ch2 = SelectKBest(chi2, k=35)
+    ch2 = SelectKBest(chi2, k=50)
     X_train = ch2.fit_transform(X_train, y_train)
     X_test = np.array([s])
     X_test = vectorizer.transform(X_test)
     X_test = ch2.transform(X_test)
        
-    LR_model = pickle.load(open("static/models/LR_sev.sav", 'rb'))
+    LR_model = pickle.load(open("static/models/sev_LR.sav", 'rb'))
     
     LR_result = LR_model.predict(X_test)
        
@@ -165,9 +165,9 @@ def push_data(id,email,location,message,progress,issue_type, severity):
         
         return "success"
 
-app = Flask(__name__)
+application = Flask(__name__)
 
-@app.route("/sms", methods=['POST'])
+@application.route("/sms", methods=['POST'])
 def sms_reply():
     """Respond to incoming calls with a simple text message."""
     
@@ -193,9 +193,10 @@ def sms_reply():
     resp = MessagingResponse()
 
     # Add a message
-    resp.message("Your id is:")
+    resp.message("Your id is:",tid)
 
     return str(resp)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(debug=True, host='0.0.0.0', port=8081)
+    
